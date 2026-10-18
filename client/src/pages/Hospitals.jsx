@@ -31,7 +31,7 @@ export const Hospitals = () => {
     try {
       setLoading(true);
       const res = await fetch('/api/hospitals');
-      if (res.ok) {
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const data = await res.json();
         if (data.success && data.hospitals && data.hospitals.length > 0) {
           setHospitals(data.hospitals);

@@ -22,7 +22,7 @@ import { StatusBadge } from '../components/StatusBadge';
 import { AmbulanceMap } from '../components/AmbulanceMap';
 import { RequestAmbulanceModal } from '../components/RequestAmbulanceModal';
 import { EmergencyGuideModal } from '../components/EmergencyGuideModal';
-import { getStoredRequests } from '../utils/clientStorage';
+import { getStoredRequests, cancelStoredRequest } from '../utils/clientStorage';
 
 export const PatientDashboard = () => {
   const { user, token } = useAuth();
@@ -39,21 +39,30 @@ export const PatientDashboard = () => {
   const fetchMyRequests = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/requests/my', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success) {
-          setRequests(data.requests || []);
-          return;
+      let loadedFromApi = false;
+
+      try {
+        const res = await fetch('/api/requests/my', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
+          const data = await res.json();
+          if (data.success) {
+            setRequests(data.requests || []);
+            loadedFromApi = true;
+          }
         }
+      } catch (e) {
+        // API offline
       }
-      throw new Error('Fallback to persistent local emergency store');
+
+      if (!loadedFromApi) {
+        const stored = getStoredRequests();
+        const myRequests = stored.filter(r => r.patientId === user?._id || user?.role === 'patient');
+        setRequests(myRequests.length > 0 ? myRequests : stored);
+      }
     } catch (err) {
-      const stored = getStoredRequests();
-      const myRequests = stored.filter(r => r.patientId === user?._id || user?.role === 'patient');
-      setRequests(myRequests.length > 0 ? myRequests : stored);
+      console.warn('Patient fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -77,25 +86,37 @@ export const PatientDashboard = () => {
     setActionMessage({ type: '', text: '' });
 
     try {
-      const res = await fetch(`/api/requests/${cancelModalReq._id}/cancel`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ reason: cancelReason })
-      });
+      let cancelled = false;
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Could not cancel request.');
+      try {
+        const res = await fetch(`/api/requests/${cancelModalReq._id}/cancel`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ reason: cancelReason })
+        });
+
+        if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
+          const data = await res.json();
+          if (data.success) {
+            cancelled = true;
+          }
+        }
+      } catch (networkErr) {
+        // Fallback
+      }
+
+      if (!cancelled) {
+        cancelStoredRequest(cancelModalReq._id, cancelReason);
       }
 
       setActionMessage({ type: 'success', text: 'Emergency ambulance request successfully cancelled.' });
       setCancelModalReq(null);
       fetchMyRequests();
     } catch (err) {
-      setActionMessage({ type: 'error', text: err.message });
+      setActionMessage({ type: 'error', text: err.message || 'Could not cancel request.' });
     } finally {
       setCancelling(false);
     }

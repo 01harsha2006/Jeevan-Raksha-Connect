@@ -149,7 +149,7 @@ export const RequestAmbulanceModal = ({ isOpen, onClose, onRequestCreated }) => 
           body: JSON.stringify(payload)
         });
 
-        if (res.ok) {
+        if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
           const data = await res.json();
           if (data.success) {
             playEmergencyTone();

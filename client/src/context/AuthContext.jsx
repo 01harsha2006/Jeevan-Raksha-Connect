@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (res.ok) {
+        if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
           const data = await res.json();
           if (data.success && data.user) {
             setUser(data.user);
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email: cleanEmail, password }),
       });
 
-      if (res.ok) {
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const data = await res.json();
         if (data.success && data.token && data.user) {
           localStorage.setItem('jrc_token', data.token);
@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify(userData),
       });
 
-      if (res.ok) {
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const data = await res.json();
         if (data.success && data.token && data.user) {
           localStorage.setItem('jrc_token', data.token);

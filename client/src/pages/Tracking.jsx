@@ -40,7 +40,7 @@ export const Tracking = () => {
     try {
       setLoading(true);
       const res = await fetch('/api/ambulances');
-      if (res.ok) {
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const data = await res.json();
         if (data.success) {
           setAmbulances(data.ambulances || []);

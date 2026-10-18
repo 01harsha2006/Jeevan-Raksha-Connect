@@ -73,13 +73,40 @@ const DEFAULT_AMBULANCES = [
 
 const DEFAULT_REQUESTS = [
   {
+    _id: 'req_pending_demo',
+    requestId: 'JR-2026-6080',
+    patientId: 'usr_patient_demo',
+    patientName: 'Rahul Menon',
+    contactNumber: '+91 94471 23456',
+    pickupLocation: {
+      address: 'Vellangallur Main Junction, Kerala',
+      latitude: 10.2858,
+      longitude: 76.2232
+    },
+    destinationHospital: {
+      name: 'Govt. Community Health Centre, Vellangallur',
+      address: 'Vellangallur, Kerala 680662',
+      latitude: 10.2842,
+      longitude: 76.2245
+    },
+    emergencyType: 'Cardiac emergency',
+    priority: 'Critical',
+    description: 'Patient experiencing severe chest pain and radiating shortness of breath.',
+    numberOfPatients: 1,
+    status: 'Pending',
+    createdAt: new Date(Date.now() - 3 * 60000).toISOString(),
+    statusHistory: [
+      { status: 'Pending', timestamp: new Date(Date.now() - 3 * 60000).toISOString(), note: 'Emergency dispatch triggered' }
+    ]
+  },
+  {
     _id: 'req_live_demo',
     requestId: 'JR-2026-1045',
     patientId: 'usr_patient_demo',
     patientName: 'Rahul Menon',
     contactNumber: '+91 94471 23456',
     pickupLocation: {
-      address: 'Vellangallur Main Junction (Near Bus Stop)',
+      address: 'Vellangallur Main Junction (Near Bus Stand)',
       latitude: 10.2858,
       longitude: 76.2232
     },
@@ -232,4 +259,87 @@ export const saveStoredAmbulances = (ambulances) => {
   } catch (e) {
     console.error('Local storage write error:', e);
   }
+};
+
+export const updateStoredRequestStatus = (idOrReqId, status, note, extra = {}) => {
+  const reqs = getStoredRequests();
+  let updatedReq = null;
+  const updatedList = reqs.map(r => {
+    if (r._id === idOrReqId || r.requestId === idOrReqId) {
+      updatedReq = {
+        ...r,
+        status,
+        ...extra,
+        statusHistory: [
+          ...(r.statusHistory || []),
+          { status, timestamp: new Date().toISOString(), note: note || `Status changed to ${status}` }
+        ]
+      };
+      return updatedReq;
+    }
+    return r;
+  });
+
+  if (!updatedReq) {
+    updatedReq = {
+      _id: idOrReqId,
+      requestId: typeof idOrReqId === 'string' && idOrReqId.startsWith('JR-') ? idOrReqId : `JR-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      status,
+      ...extra,
+      statusHistory: [
+        { status, timestamp: new Date().toISOString(), note: note || `Status changed to ${status}` }
+      ]
+    };
+    updatedList.unshift(updatedReq);
+  }
+
+  saveStoredRequests(updatedList);
+  return updatedReq;
+};
+
+export const cancelStoredRequest = (idOrReqId, reason) => {
+  return updateStoredRequestStatus(idOrReqId, 'Cancelled', reason || 'Cancelled by user', {
+    cancelReason: reason || 'Cancelled by user'
+  });
+};
+
+export const assignStoredRequest = (idOrReqId, driverId, ambulanceId) => {
+  const users = getStoredUsers();
+  const ambs = getStoredAmbulances();
+  const driver = users.find(u => u._id === driverId || u.role === 'driver');
+  const amb = ambs.find(a => a._id === ambulanceId) || ambs[0];
+
+  return updateStoredRequestStatus(
+    idOrReqId,
+    'Accepted',
+    `Ambulance ${amb?.vehicleNumber || 'KL-45-A-1080'} assigned with driver ${driver?.name || 'Suresh Kumar'}`,
+    {
+      assignedDriver: driver
+        ? { id: driver._id, name: driver.name, phone: driver.phone }
+        : { id: 'usr_driver_demo', name: 'Suresh Kumar', phone: '+91 98460 11223' },
+      assignedAmbulance: amb
+        ? {
+            id: amb._id,
+            vehicleNumber: amb.vehicleNumber,
+            vehicleType: amb.vehicleType,
+            latitude: amb.location?.latitude || 10.2858,
+            longitude: amb.location?.longitude || 76.2232
+          }
+        : undefined
+    }
+  );
+};
+
+export const addStoredAmbulance = (ambData) => {
+  const ambs = getStoredAmbulances();
+  const newAmb = {
+    _id: 'amb_' + Date.now(),
+    ...ambData,
+    status: ambData.status || 'Available',
+    rating: 5.0,
+    tripsCompleted: 0
+  };
+  ambs.push(newAmb);
+  saveStoredAmbulances(ambs);
+  return newAmb;
 };
