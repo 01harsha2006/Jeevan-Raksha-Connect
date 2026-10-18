@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 
   // Login handler with automated offline/GitHub Pages fallback
   const login = async (email, password) => {
-    const cleanEmail = email.toLowerCase().trim();
+    const cleanEmail = (email || '').toLowerCase().trim();
 
     // 1. Try real backend API first
     try {
@@ -78,29 +78,41 @@ export const AuthProvider = ({ children }) => {
 
     // 2. Client-Side Resilient Fallback (for GitHub Pages or offline)
     const storedUsers = getStoredUsers();
-    const matchedUser = storedUsers.find(u => u.email.toLowerCase() === cleanEmail);
+    let matchedUser = storedUsers.find(u => u.email.toLowerCase() === cleanEmail);
 
-    if (matchedUser) {
-      const mockToken = `mock_token_${matchedUser._id}_${Date.now()}`;
-      localStorage.setItem('jrc_token', mockToken);
-      localStorage.setItem('jrc_user', JSON.stringify(matchedUser));
-      setToken(mockToken);
-      setUser(matchedUser);
-      return { success: true, user: matchedUser, token: mockToken };
+    // If exact email not found, match forgiving keywords so forgotten details never block login
+    if (!matchedUser) {
+      if (cleanEmail.includes('driver') || cleanEmail.includes('ambulance') || cleanEmail.includes('suresh')) {
+        matchedUser = storedUsers.find(u => u.role === 'driver') || storedUsers[1];
+      } else if (cleanEmail.includes('admin') || cleanEmail.includes('lakshmi') || cleanEmail.includes('gov') || cleanEmail.includes('doctor')) {
+        matchedUser = storedUsers.find(u => u.role === 'admin') || storedUsers[2];
+      } else if (cleanEmail.includes('patient') || cleanEmail.includes('rahul')) {
+        matchedUser = storedUsers.find(u => u.role === 'patient') || storedUsers[0];
+      } else if (cleanEmail) {
+        // Any custom email provided: create or reuse dynamically so user never gets locked out
+        const displayName = cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Registered User';
+        matchedUser = {
+          _id: 'usr_' + Date.now(),
+          name: displayName,
+          email: cleanEmail.includes('@') ? cleanEmail : `${cleanEmail}@example.com`,
+          role: cleanEmail.includes('driver') ? 'driver' : (cleanEmail.includes('admin') ? 'admin' : 'patient'),
+          phone: '+91 94471 23456',
+          address: 'Vellangallur Central, Kerala'
+        };
+        storedUsers.push(matchedUser);
+        saveStoredUsers(storedUsers);
+      } else {
+        // If empty input, default to driver demo
+        matchedUser = storedUsers.find(u => u.role === 'driver') || storedUsers[1];
+      }
     }
 
-    // If demo password fallback
-    if (cleanEmail.includes('driver')) {
-      const driverUser = storedUsers.find(u => u.role === 'driver') || storedUsers[1];
-      const mockToken = `mock_token_driver_${Date.now()}`;
-      localStorage.setItem('jrc_token', mockToken);
-      localStorage.setItem('jrc_user', JSON.stringify(driverUser));
-      setToken(mockToken);
-      setUser(driverUser);
-      return { success: true, user: driverUser, token: mockToken };
-    }
-
-    throw new Error('Invalid email or password. Please check your credentials or click 1-Click Demo Access.');
+    const mockToken = `mock_token_${matchedUser._id}_${Date.now()}`;
+    localStorage.setItem('jrc_token', mockToken);
+    localStorage.setItem('jrc_user', JSON.stringify(matchedUser));
+    setToken(mockToken);
+    setUser(matchedUser);
+    return { success: true, user: matchedUser, token: mockToken };
   };
 
   // Register handler with persistent client fallback

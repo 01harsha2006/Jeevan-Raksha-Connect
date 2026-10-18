@@ -141,39 +141,37 @@ export const Navbar = () => {
                 border: '1px solid var(--border-light)',
                 borderRadius: 'var(--radius-md)',
                 boxShadow: 'var(--shadow-lg)',
-                width: '210px',
+                width: '270px',
                 zIndex: 1100,
-                padding: '0.4rem'
+                padding: '0.5rem'
               }}>
-                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', padding: '0.35rem 0.6rem', textTransform: 'uppercase' }}>
-                  1-Click Demo Login
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#2563EB', padding: '0.35rem 0.6rem', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>1-Click Demo Login</span>
+                  <span style={{ fontSize: '0.68rem', color: '#64748B' }}>Pass: shown below</span>
                 </div>
                 <button
-                  onClick={() => handleDemoSelect('patient')}
-                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.6rem', background: 'transparent', borderRadius: '4px', fontSize: '0.85rem', display: 'flex', flexDirection: 'column' }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-light)'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  onClick={() => handleDemoSelect('driver')}
+                  style={{ width: '100%', textAlign: 'left', padding: '0.55rem 0.6rem', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '6px', fontSize: '0.82rem', display: 'flex', flexDirection: 'column', marginBottom: '0.4rem', cursor: 'pointer' }}
                 >
-                  <strong style={{ color: 'var(--secondary-navy)' }}>Rahul Menon</strong>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Patient Dashboard</span>
+                  <strong style={{ color: '#1E40AF' }}>🚑 Suresh Kumar (ALS Driver)</strong>
+                  <span style={{ fontSize: '0.72rem', color: '#3B82F6' }}><code>suresh.driver@example.com</code></span>
+                  <span style={{ fontSize: '0.7rem', color: '#64748B' }}>Password: <code>driver123</code></span>
                 </button>
                 <button
-                  onClick={() => handleDemoSelect('driver')}
-                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.6rem', background: 'transparent', borderRadius: '4px', fontSize: '0.85rem', display: 'flex', flexDirection: 'column' }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-light)'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  onClick={() => handleDemoSelect('patient')}
+                  style={{ width: '100%', textAlign: 'left', padding: '0.55rem 0.6rem', background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '6px', fontSize: '0.82rem', display: 'flex', flexDirection: 'column', marginBottom: '0.4rem', cursor: 'pointer' }}
                 >
-                  <strong style={{ color: 'var(--secondary-navy)' }}>Suresh Kumar (ALS)</strong>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Driver Dashboard</span>
+                  <strong style={{ color: '#991B1B' }}>👤 Rahul Menon (Patient)</strong>
+                  <span style={{ fontSize: '0.72rem', color: '#EF4444' }}><code>rahul@example.com</code></span>
+                  <span style={{ fontSize: '0.7rem', color: '#64748B' }}>Password: <code>patient123</code></span>
                 </button>
                 <button
                   onClick={() => handleDemoSelect('admin')}
-                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.6rem', background: 'transparent', borderRadius: '4px', fontSize: '0.85rem', display: 'flex', flexDirection: 'column' }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-light)'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  style={{ width: '100%', textAlign: 'left', padding: '0.55rem 0.6rem', background: '#F5F3FF', border: '1px solid #DDD6FE', borderRadius: '6px', fontSize: '0.82rem', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
                 >
-                  <strong style={{ color: 'var(--secondary-navy)' }}>Dr. Lakshmi Nair</strong>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Admin Controller</span>
+                  <strong style={{ color: '#6D28D9' }}>🛡️ Dr. Lakshmi Nair (Admin)</strong>
+                  <span style={{ fontSize: '0.72rem', color: '#7C3AED' }}><code>admin@jeevanraksha.gov.in</code></span>
+                  <span style={{ fontSize: '0.7rem', color: '#64748B' }}>Password: <code>admin123</code></span>
                 </button>
               </div>
             )}

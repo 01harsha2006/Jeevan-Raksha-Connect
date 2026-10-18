@@ -86,9 +86,23 @@ export const Auth = () => {
     }
   };
 
+  const handleAutofill = (demoRole) => {
+    if (demoRole === 'driver') {
+      setEmail('suresh.driver@example.com');
+      setPassword('driver123');
+    } else if (demoRole === 'admin') {
+      setEmail('admin@jeevanraksha.gov.in');
+      setPassword('admin123');
+    } else {
+      setEmail('rahul@example.com');
+      setPassword('patient123');
+    }
+  };
+
   const handleDemoClick = async (demoRole) => {
     setError('');
     setLoading(true);
+    handleAutofill(demoRole);
     try {
       const res = await loginAsDemo(demoRole);
       redirectAfterLogin(res.user.role);
@@ -101,7 +115,7 @@ export const Auth = () => {
 
   return (
     <div style={{ minHeight: '85vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1.25rem', backgroundColor: 'var(--bg-light)' }}>
-      <div style={{ width: '100%', maxWidth: '580px' }}>
+      <div style={{ width: '100%', maxWidth: '620px' }}>
         
         {/* Card */}
         <div className="card" style={{ padding: '2.5rem 2rem', boxShadow: 'var(--shadow-lg)' }}>
@@ -131,46 +145,122 @@ export const Auth = () => {
             </p>
           </div>
 
-          {/* 1-Click Demo Profiles Box */}
+          {/* 1-Click Demo Credentials Cheat Sheet */}
           <div style={{
-            backgroundColor: '#EFF6FF',
-            border: '1px solid #BFDBFE',
+            backgroundColor: '#F8FAFC',
+            border: '1.5px solid #CBD5E1',
             borderRadius: 'var(--radius-md)',
-            padding: '1rem',
-            marginBottom: '1.75rem'
+            padding: '1.1rem',
+            marginBottom: '1.75rem',
+            boxShadow: 'var(--shadow-sm)'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#1E40AF', fontSize: '0.85rem', fontWeight: 700 }}>
-                <Sparkles size={16} />
-                <span>Instant 1-Click Demo Access</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0F172A', fontSize: '0.9rem', fontWeight: 700 }}>
+                <Sparkles size={18} color="#2563EB" />
+                <span>Demo Login Credentials & Quick Access</span>
               </div>
-              <span style={{ fontSize: '0.72rem', color: '#3B82F6', fontWeight: 600 }}>Quick evaluation</span>
+              <span style={{ fontSize: '0.72rem', backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '0.2rem 0.5rem', borderRadius: '4px', fontWeight: 600 }}>
+                Pre-configured
+              </span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-              <button
-                type="button"
-                onClick={() => handleDemoClick('patient')}
-                className="btn btn-outline btn-sm"
-                style={{ backgroundColor: 'white', fontSize: '0.78rem', padding: '0.45rem 0.2rem', textAlign: 'center', borderColor: '#93C5FD' }}
-              >
-                👤 Patient Demo
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoClick('driver')}
-                className="btn btn-outline btn-sm"
-                style={{ backgroundColor: 'white', fontSize: '0.78rem', padding: '0.45rem 0.2rem', textAlign: 'center', borderColor: '#93C5FD', fontWeight: 700, color: '#1E40AF' }}
-              >
-                🚑 Driver Demo
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoClick('admin')}
-                className="btn btn-outline btn-sm"
-                style={{ backgroundColor: 'white', fontSize: '0.78rem', padding: '0.45rem 0.2rem', textAlign: 'center', borderColor: '#93C5FD' }}
-              >
-                🛡️ Admin Demo
-              </button>
+
+            <p style={{ fontSize: '0.78rem', color: '#64748B', margin: '0 0 0.75rem 0' }}>
+              Click any role card below to <strong>auto-fill credentials and log in instantly</strong>:
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.6rem' }}>
+              {/* Driver Demo */}
+              <div style={{
+                backgroundColor: 'white',
+                border: '1.5px solid #93C5FD',
+                borderRadius: '8px',
+                padding: '0.65rem',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.8rem', color: '#1E40AF', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <span>🚑 Driver (ALS)</span>
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: '#475569', marginTop: '0.3rem', wordBreak: 'break-all' }}>
+                    <code>suresh.driver@example.com</code>
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748B', marginTop: '0.15rem' }}>
+                    Pass: <code>driver123</code>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDemoClick('driver')}
+                  className="btn btn-primary btn-sm"
+                  style={{ marginTop: '0.5rem', fontSize: '0.74rem', padding: '0.35rem 0.4rem', width: '100%' }}
+                >
+                  ⚡ Enter as Driver
+                </button>
+              </div>
+
+              {/* Patient Demo */}
+              <div style={{
+                backgroundColor: 'white',
+                border: '1.5px solid #FCA5A5',
+                borderRadius: '8px',
+                padding: '0.65rem',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.8rem', color: '#991B1B', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <span>👤 Patient</span>
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: '#475569', marginTop: '0.3rem', wordBreak: 'break-all' }}>
+                    <code>rahul@example.com</code>
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748B', marginTop: '0.15rem' }}>
+                    Pass: <code>patient123</code>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDemoClick('patient')}
+                  className="btn btn-outline-red btn-sm"
+                  style={{ marginTop: '0.5rem', fontSize: '0.74rem', padding: '0.35rem 0.4rem', width: '100%' }}
+                >
+                  ⚡ Enter as Patient
+                </button>
+              </div>
+
+              {/* Admin Demo */}
+              <div style={{
+                backgroundColor: 'white',
+                border: '1.5px solid #DDD6FE',
+                borderRadius: '8px',
+                padding: '0.65rem',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.8rem', color: '#6D28D9', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <span>🛡️ Dispatcher</span>
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: '#475569', marginTop: '0.3rem', wordBreak: 'break-all' }}>
+                    <code>admin@jeevanraksha.gov.in</code>
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748B', marginTop: '0.15rem' }}>
+                    Pass: <code>admin123</code>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDemoClick('admin')}
+                  className="btn btn-outline btn-sm"
+                  style={{ marginTop: '0.5rem', fontSize: '0.74rem', padding: '0.35rem 0.4rem', width: '100%', borderColor: '#7C3AED', color: '#7C3AED' }}
+                >
+                  ⚡ Enter as Admin
+                </button>
+              </div>
             </div>
           </div>
 
@@ -526,21 +616,24 @@ export const Auth = () => {
             {/* Informational Note for Sign In mode */}
             {!isRegister && (
               <div style={{
-                backgroundColor: 'var(--bg-light)',
-                border: '1px solid var(--border-light)',
+                backgroundColor: '#EFF6FF',
+                border: '1px solid #BFDBFE',
                 borderRadius: 'var(--radius-md)',
-                padding: '0.75rem 0.9rem',
+                padding: '0.85rem 1rem',
                 fontSize: '0.82rem',
-                color: 'var(--text-muted)',
-                marginBottom: '1rem',
+                color: '#1E40AF',
+                marginBottom: '1.25rem',
                 display: 'flex',
-                gap: '0.5rem',
-                alignItems: 'center'
+                gap: '0.6rem',
+                alignItems: 'flex-start'
               }}>
-                <Info size={16} color="var(--primary-red)" style={{ flexShrink: 0 }} />
-                <span>
-                  <strong>Ambulance Drivers:</strong> Logging in with your driver account routes you directly to the <strong>Driver Emergency Console</strong>.
-                </span>
+                <Info size={18} color="#2563EB" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <strong>Forgot your exact login details?</strong>
+                  <div style={{ marginTop: '0.2rem', color: '#1E40AF' }}>
+                    Click any card above for 1-click access, or simply type <code>driver</code>, <code>admin</code>, or <code>patient</code> in the email field with any password!
+                  </div>
+                </div>
               </div>
             )}
 
