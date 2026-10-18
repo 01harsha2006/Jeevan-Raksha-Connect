@@ -191,3 +191,5 @@ For evaluator convenience, 1-click login buttons are provided on the Login page 
 
 Developed as an academic demonstration for the Kerala healthcare transit sector.  
 © 2026 **Jeevan Raksha Connect**. All rights reserved.
+#   J e e v a n - R a k s h a - C o n n e c t  
+ 
