@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { StatusBadge } from '../components/StatusBadge';
 import { AmbulanceMap } from '../components/AmbulanceMap';
+import { getStoredRequests, getStoredAmbulances, getStoredUsers } from '../utils/clientStorage';
 
 export const AdminDashboard = () => {
   const { user, token } = useAuth();
@@ -83,7 +84,25 @@ export const AdminDashboard = () => {
       if (ambData.success) setAmbulances(ambData.ambulances || []);
       if (usersData.success) setUsersList(usersData.users || []);
     } catch (err) {
-      console.error('Error fetching admin data:', err);
+      console.warn('Backend API offline, loading client fallback dispatch store...', err);
+      const reqs = getStoredRequests();
+      const ambs = getStoredAmbulances();
+      const usrs = getStoredUsers();
+      setRequests(reqs);
+      setAmbulances(ambs);
+      setUsersList(usrs);
+      setDrivers(usrs.filter(u => u.role === 'driver'));
+      setDashboardData({
+        metrics: {
+          totalRequests: reqs.length,
+          pendingRequests: reqs.filter(r => r.status === 'Pending').length,
+          activeTransits: reqs.filter(r => ['Accepted', 'Ambulance Assigned', 'On the Way', 'Arrived at Pickup'].includes(r.status)).length,
+          completedTransits: reqs.filter(r => r.status === 'Completed').length,
+          availableAmbulances: ambs.filter(a => a.status === 'Available').length,
+          totalAmbulances: ambs.length,
+        },
+        recentActivity: reqs.slice(0, 5)
+      });
     } finally {
       setLoading(false);
     }

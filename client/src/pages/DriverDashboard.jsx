@@ -21,6 +21,7 @@ import {
 import { StatusBadge } from '../components/StatusBadge';
 import { AmbulanceMap } from '../components/AmbulanceMap';
 import { playEmergencyTone } from '../utils/alertSound';
+import { getStoredRequests, saveStoredRequests, getStoredAmbulances } from '../utils/clientStorage';
 
 export const DriverDashboard = () => {
   const { user, token } = useAuth();
@@ -82,29 +83,52 @@ export const DriverDashboard = () => {
       const res = await fetch('/api/drivers/me/requests', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const data = await res.json();
-      if (data.success) {
-        setAssignedRequests(data.assigned || []);
-        setPendingRequests(data.pending || []);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setAssignedRequests(data.assigned || []);
+          setPendingRequests(data.pending || []);
 
-        if (data.ambulance) {
-          setAmbulanceInfo(prev => ({
-            ...prev,
-            vehicleNumber: data.ambulance.vehicleNumber || prev.vehicleNumber,
-            vehicleType: data.ambulance.vehicleType || prev.vehicleType,
-            baseStation: data.ambulance.baseStation || prev.baseStation,
-            rating: data.ambulance.rating || 5.0,
-            tripsCompleted: data.ambulance.tripsCompleted || 0,
-          }));
-        }
+          if (data.ambulance) {
+            setAmbulanceInfo(prev => ({
+              ...prev,
+              vehicleNumber: data.ambulance.vehicleNumber || prev.vehicleNumber,
+              vehicleType: data.ambulance.vehicleType || prev.vehicleType,
+              baseStation: data.ambulance.baseStation || prev.baseStation,
+              rating: data.ambulance.rating || 5.0,
+              tripsCompleted: data.ambulance.tripsCompleted || 0,
+            }));
+          }
 
-        // If there are pending requests, sound the chime once
-        if (data.pending && data.pending.length > 0) {
-          playEmergencyTone();
+          if (data.pending && data.pending.length > 0) {
+            playEmergencyTone();
+          }
+          return;
         }
       }
+      throw new Error('API offline, using resilient store');
     } catch (err) {
-      console.error('Failed to load driver requests:', err);
+      const stored = getStoredRequests();
+      const assigned = stored.filter(r => 
+        (r.assignedDriver?.id === user?._id || r.assignedDriver?.name === user?.name || r.status !== 'Pending') &&
+        r.status !== 'Completed' && r.status !== 'Cancelled'
+      );
+      const pending = stored.filter(r => r.status === 'Pending');
+      setAssignedRequests(assigned);
+      setPendingRequests(pending);
+
+      const ambList = getStoredAmbulances();
+      const myAmb = ambList.find(a => a.driverName === user?.name || a.driverId === user?._id) || ambList[0];
+      if (myAmb) {
+        setAmbulanceInfo(prev => ({
+          ...prev,
+          vehicleNumber: myAmb.vehicleNumber || prev.vehicleNumber,
+          vehicleType: myAmb.vehicleType || prev.vehicleType,
+          baseStation: myAmb.baseStation || prev.baseStation,
+          rating: myAmb.rating || 5.0,
+          tripsCompleted: myAmb.tripsCompleted || 0
+        }));
+      }
     } finally {
       setLoading(false);
     }

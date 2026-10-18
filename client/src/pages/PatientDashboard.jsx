@@ -22,6 +22,7 @@ import { StatusBadge } from '../components/StatusBadge';
 import { AmbulanceMap } from '../components/AmbulanceMap';
 import { RequestAmbulanceModal } from '../components/RequestAmbulanceModal';
 import { EmergencyGuideModal } from '../components/EmergencyGuideModal';
+import { getStoredRequests } from '../utils/clientStorage';
 
 export const PatientDashboard = () => {
   const { user, token } = useAuth();
@@ -41,12 +42,18 @@ export const PatientDashboard = () => {
       const res = await fetch('/api/requests/my', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const data = await res.json();
-      if (data.success) {
-        setRequests(data.requests || []);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setRequests(data.requests || []);
+          return;
+        }
       }
+      throw new Error('Fallback to persistent local emergency store');
     } catch (err) {
-      console.error('Failed to load patient requests:', err);
+      const stored = getStoredRequests();
+      const myRequests = stored.filter(r => r.patientId === user?._id || user?.role === 'patient');
+      setRequests(myRequests.length > 0 ? myRequests : stored);
     } finally {
       setLoading(false);
     }

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { AmbulanceMap } from '../components/AmbulanceMap';
 import { StatusBadge } from '../components/StatusBadge';
+import { getStoredAmbulances } from '../utils/clientStorage';
 
 export const Tracking = () => {
   const [ambulances, setAmbulances] = useState([]);
@@ -39,12 +40,16 @@ export const Tracking = () => {
     try {
       setLoading(true);
       const res = await fetch('/api/ambulances');
-      const data = await res.json();
-      if (data.success) {
-        setAmbulances(data.ambulances || []);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setAmbulances(data.ambulances || []);
+          return;
+        }
       }
+      throw new Error('API offline');
     } catch (e) {
-      console.error(e);
+      setAmbulances(getStoredAmbulances());
     } finally {
       setLoading(false);
     }

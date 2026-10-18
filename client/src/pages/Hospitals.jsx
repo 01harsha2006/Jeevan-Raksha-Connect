@@ -14,9 +14,11 @@ import {
   ShieldCheck
 } from 'lucide-react';
 
+import { DEFAULT_HOSPITALS } from '../utils/clientStorage';
+
 export const Hospitals = () => {
-  const [hospitals, setHospitals] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [hospitals, setHospitals] = useState(DEFAULT_HOSPITALS);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [facilityFilter, setFacilityFilter] = useState('ALL');
 
@@ -29,12 +31,15 @@ export const Hospitals = () => {
     try {
       setLoading(true);
       const res = await fetch('/api/hospitals');
-      const data = await res.json();
-      if (data.success) {
-        setHospitals(data.hospitals || []);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.hospitals && data.hospitals.length > 0) {
+          setHospitals(data.hospitals);
+          return;
+        }
       }
     } catch (err) {
-      console.error('Error fetching hospitals:', err);
+      // Gracefully retain DEFAULT_HOSPITALS
     } finally {
       setLoading(false);
     }
