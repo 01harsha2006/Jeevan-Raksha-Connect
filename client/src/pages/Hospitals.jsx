@@ -26,22 +26,22 @@ export const Hospitals = () => {
   const [userCoords, setUserCoords] = useState({ latitude: 10.2858, longitude: 76.2232, label: 'Vellangallur Central (Default)' });
   const [gpsActive, setGpsActive] = useState(false);
 
-  // Fetch verified hospitals from API
+  // Fetch verified hospitals from API with fallback
   const fetchHospitals = async () => {
     try {
-      setLoading(true);
-      const res = await fetch('/api/hospitals');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      const res = await fetch('/api/hospitals', { signal: controller.signal });
+      clearTimeout(timeoutId);
+
       if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const data = await res.json();
         if (data.success && data.hospitals && data.hospitals.length > 0) {
           setHospitals(data.hospitals);
-          return;
         }
       }
     } catch (err) {
       // Gracefully retain DEFAULT_HOSPITALS
-    } finally {
-      setLoading(false);
     }
   };
 

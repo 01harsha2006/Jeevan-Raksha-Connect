@@ -19,10 +19,10 @@ import { StatusBadge } from '../components/StatusBadge';
 import { getStoredAmbulances } from '../utils/clientStorage';
 
 export const Tracking = () => {
-  const [ambulances, setAmbulances] = useState([]);
+  const [ambulances, setAmbulances] = useState(() => getStoredAmbulances());
   const [filterType, setFilterType] = useState('ALL');
   const [filterStatus, setFilterStatus] = useState('ALL');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Simulation State for Academic Demonstration
   const [simStep, setSimStep] = useState(3); // 0 to 5
@@ -35,23 +35,22 @@ export const Tracking = () => {
     { title: 'Completed', desc: 'Patient safely handed over to hospital trauma emergency.' },
   ];
 
-  // Fetch ambulances
+  // Fetch ambulances from API with fallback
   const fetchAmbulances = async () => {
     try {
-      setLoading(true);
-      const res = await fetch('/api/ambulances');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      const res = await fetch('/api/ambulances', { signal: controller.signal });
+      clearTimeout(timeoutId);
+
       if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const data = await res.json();
-        if (data.success) {
-          setAmbulances(data.ambulances || []);
-          return;
+        if (data.success && data.ambulances && data.ambulances.length > 0) {
+          setAmbulances(data.ambulances);
         }
       }
-      throw new Error('API offline');
     } catch (e) {
-      setAmbulances(getStoredAmbulances());
-    } finally {
-      setLoading(false);
+      // Gracefully retain stored ambulances
     }
   };
 

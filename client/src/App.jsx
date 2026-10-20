@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -14,6 +14,20 @@ import { Tracking } from './pages/Tracking';
 import { Hospitals } from './pages/Hospitals';
 import { About } from './pages/About';
 import { Contact } from './pages/Contact';
+
+// Scroll to top on route change helper
+const ScrollToTop = () => {
+  const { pathname, search } = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(search);
+    if (!params.get('section')) {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, search]);
+
+  return null;
+};
 
 // Protected Route Guard
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -67,7 +81,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 export const App = () => {
   return (
     <AuthProvider>
-      <Router basename={import.meta.env.BASE_URL}>
+      <Router>
+        <ScrollToTop />
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           <Navbar />
           <main style={{ flex: 1 }}>
