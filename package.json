@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "Smart Emergency Ambulance Booking and Dispatch System for Vellangallur, Kerala",
   "scripts": {
+    "dev": "npm --prefix client run dev",
+    "start": "npm --prefix client run dev",
     "server": "npm --prefix server run dev",
     "client": "npm --prefix client run dev",
     "build": "npm --prefix client run build",
