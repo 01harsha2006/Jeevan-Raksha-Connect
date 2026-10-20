@@ -45,6 +45,21 @@ export const Navbar = () => {
     return '/patient';
   };
 
+  const handleNavSection = (e, sectionId) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+
+    if (location.pathname === '/') {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        window.history.pushState(null, '', `#${sectionId}`);
+      }
+    } else {
+      navigate(`/?section=${sectionId}`);
+    }
+  };
+
   return (
     <header style={{ position: 'sticky', top: 0, zIndex: 1000, backgroundColor: 'var(--bg-white)', boxShadow: 'var(--shadow-sm)' }}>
       {/* Prototype Advisory Bar */}
@@ -88,10 +103,18 @@ export const Navbar = () => {
           <Link to="/" style={{ fontWeight: 600, fontSize: '0.95rem', color: location.pathname === '/' ? 'var(--primary-red)' : 'var(--secondary-navy)' }}>
             Home
           </Link>
-          <a href="/#how-it-works" style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--secondary-navy)' }}>
+          <a
+            href="#how-it-works"
+            onClick={(e) => handleNavSection(e, 'how-it-works')}
+            style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--secondary-navy)', cursor: 'pointer' }}
+          >
             How It Works
           </a>
-          <a href="/#services" style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--secondary-navy)' }}>
+          <a
+            href="#services"
+            onClick={(e) => handleNavSection(e, 'services')}
+            style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--secondary-navy)', cursor: 'pointer' }}
+          >
             Services
           </a>
           <Link to="/hospitals" style={{ fontWeight: 600, fontSize: '0.95rem', color: location.pathname === '/hospitals' ? 'var(--primary-red)' : 'var(--secondary-navy)' }}>
@@ -226,8 +249,20 @@ export const Navbar = () => {
           gap: '1rem'
         }}>
           <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 600, padding: '0.4rem 0' }}>Home</Link>
-          <a href="/#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 600, padding: '0.4rem 0' }}>How It Works</a>
-          <a href="/#services" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 600, padding: '0.4rem 0' }}>Services</a>
+          <a
+            href="#how-it-works"
+            onClick={(e) => handleNavSection(e, 'how-it-works')}
+            style={{ fontWeight: 600, padding: '0.4rem 0', color: 'var(--secondary-navy)', cursor: 'pointer' }}
+          >
+            How It Works
+          </a>
+          <a
+            href="#services"
+            onClick={(e) => handleNavSection(e, 'services')}
+            style={{ fontWeight: 600, padding: '0.4rem 0', color: 'var(--secondary-navy)', cursor: 'pointer' }}
+          >
+            Services
+          </a>
           <Link to="/hospitals" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 600, padding: '0.4rem 0' }}>Nearby Hospitals</Link>
           <Link to="/tracking" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 600, padding: '0.4rem 0' }}>Ambulance Live Tracking</Link>
           <Link to="/about" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 600, padding: '0.4rem 0' }}>About Project</Link>

@@ -56,8 +56,8 @@ export const Footer = () => {
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.9rem' }}>
               <li><Link to="/" style={{ color: '#CBD5E1' }}>Home Page</Link></li>
-              <li><a href="/#how-it-works" style={{ color: '#CBD5E1' }}>How It Works</a></li>
-              <li><a href="/#services" style={{ color: '#CBD5E1' }}>Ambulance Services</a></li>
+              <li><Link to="/?section=how-it-works" style={{ color: '#CBD5E1' }}>How It Works</Link></li>
+              <li><Link to="/?section=services" style={{ color: '#CBD5E1' }}>Ambulance Services</Link></li>
               <li><Link to="/hospitals" style={{ color: '#CBD5E1' }}>Nearby Hospitals Directory</Link></li>
               <li><Link to="/tracking" style={{ color: '#CBD5E1' }}>Map & Live Dispatch</Link></li>
               <li><Link to="/about" style={{ color: '#CBD5E1' }}>About Project & Mission</Link></li>

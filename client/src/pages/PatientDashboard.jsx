@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
   Siren, 
@@ -16,7 +17,8 @@ import {
   Navigation,
   ShieldCheck,
   Plus,
-  Activity
+  Activity,
+  HelpCircle
 } from 'lucide-react';
 import { StatusBadge } from '../components/StatusBadge';
 import { AmbulanceMap } from '../components/AmbulanceMap';
@@ -150,7 +152,25 @@ export const PatientDashboard = () => {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+            <Link
+              to="/?section=how-it-works"
+              className="btn btn-outline btn-sm"
+              style={{ backgroundColor: 'white' }}
+              title="Learn how ambulance dispatch workflow operates"
+            >
+              <HelpCircle size={15} />
+              <span>How It Works</span>
+            </Link>
+            <button
+              onClick={() => setGuideModalOpen(true)}
+              className="btn btn-outline btn-sm"
+              style={{ backgroundColor: 'white', color: 'var(--primary-red)', borderColor: 'var(--primary-red)' }}
+              title="First aid guidance while ambulance is en route"
+            >
+              <Activity size={15} />
+              <span>First Aid Guide</span>
+            </button>
             <button
               onClick={fetchMyRequests}
               className="btn btn-outline btn-sm"
@@ -163,7 +183,7 @@ export const PatientDashboard = () => {
             <button
               onClick={() => setModalOpen(true)}
               className="btn btn-emergency"
-              style={{ padding: '0.75rem 1.4rem' }}
+              style={{ padding: '0.65rem 1.25rem' }}
             >
               <Plus size={18} />
               <span>Request an Ambulance</span>
